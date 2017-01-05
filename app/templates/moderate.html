@@ -1,0 +1,22 @@
+<!-- 评论管理页面的模板
+ 模板将渲染评论的各种交给_comments.html模板完成，但把控制权交给从属模板之前，会使用Jinja2提
+ 供的set指令定义一个模板变量moderate，并将其值设为True。这个变量用在_comments.html模板中，
+ 决定是否渲染评论管理功能。
+ -->
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Flasky - Comment Moderation{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Comment Moderate</h1>
+</div>
+{% set moderate = True %}
+{% include '_comments.html' %}
+{% if pagination %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, '.moderate') }}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,50 @@
+<!-- 播客文章模板，局部模板 -->
+<ul class="posts">
+    {% for post in posts %}
+    <li class="post">
+        <div class="post-thumbnail">
+            <a href="{{ url_for('.user', username=post.author.username) }}">
+                <img class="img-rounded profile-thumbnail" src="{{ post.author.gravatar(size=40) }}">
+            </a>
+        </div>
+        <div class="post-content">
+            <div class="post-date">{{ moment(post.timestamp).fromNow() }}</div>
+            <div class="post-author"><a href="{{ url_for('.user', username=post.author.username) }}">{{ post.author.username }}</a></div>
+            <div class="post-body">
+                <!-- 渲染HTML格式内容时使用"| safe"后缀，其目的是告诉Jinja2不要转义HTML
+                元素。
+                -->
+                {% if post.body_html %}
+                    {{ post.body_html | safe }}
+                {% else %}
+                    {{ post.body }}
+                {% endif %}
+            </div>
+            <div class="post-footer">
+                <!-- 编辑博客文章 -->
+                {% if current_user == post.author %}
+                <a href="{{ url_for('.edit', id=post.id) }}">
+                    <span class="label label-primary">Edit</span>
+                </a>
+                {% elif current_user.is_administrator() %}
+                <a href="{{ url_for('.edit', id=post.id) }}">
+                    <span class="label label-danger">Edit [Admin]</span>
+                </a>
+                {% endif %}
+                <!-- 博客文章链接 -->
+                <a href="{{ url_for('.post', id=post.id) }}">
+                    <span class="label label-default">Permalink</span>
+                </a>
+                <!-- 链接到博客文章的评论
+                 链接的地址是在文章的固定链接后面加上一个#comments后缀。这个后缀称为URL片段，用于指定加载
+    页面后滚动所在的初始位置。Web浏览器会寻找id等于URL片段的元素并滚动页面，让这个元素显示在
+    窗口顶部。这个初始位置被设为post.html模板中评论区的标题。
+                 -->
+                <a href="{{ url_for('.post', id=post.id) }}#comments">
+                    <span class="label label-primary">{{ post.comment.count() }} Comments</span>
+                </a>
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
